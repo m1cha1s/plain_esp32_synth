@@ -81,27 +81,45 @@ class Biquad_filter {
 
 };
 
-class State_variable_filter {
-    private:
+class State_variable_filter {    
+    public:
+
         char type = 0;
-        float Fc = 1, Fs = SAMPLE_RATE, Q = 0.7, peak_gain = 1;
+        float Fc = 10000, Fs = SAMPLE_RATE, Q = 0.7;
 
         float f, q;
-        float px, py;
-    
-    public:
-        inline void calculate() {
+        float low = 0, high = 0, band = 0, notch = 0;
+
+        inline void set_type(char tp = 0) {
+            type = tp;
+        }
+
+        inline void set_cutoff(float cutoff) {
+            Fc = cutoff;
+        }
+
+        inline void set_resonance(float resonance) {
+            Q = resonance;
+        }
+
+        inline void compute() {
             f = 2.0f*sin((PI*Fc)/Fs);
             q = 1.0f/Q;
         }
 
         inline float process(float x) {
-    
+            low = low + f * band;
+            high = q * x - low - q*band;
+            band = f * high + band;
+            notch = high + low;
+            switch(type) {
+                case 0: return low;
+                case 1: return high;
+                case 2: return band;
+                case 3: return notch;
+                default: return low;
+            }
         }
 };
-
-typedef struct {
-    
-}State_variable_filter;
 
 #endif

@@ -16,6 +16,7 @@
 #include "config.hpp"
 #include "functions.hpp"
 #include "midi.hpp"
+#include "engines.hpp"
 
 void core_0_task(void * param);
 void setup_0();
@@ -28,29 +29,24 @@ void setup() {
   init_I2S();
 
   randomSeed(34547379);
-  main_filter.calculate();
 
   xTaskCreatePinnedToCore(core_0_task, "Core 0 task", 10000, NULL, 0, NULL, 0);
-  xTaskCreatePinnedToCore(midi_task, "midi task", 10000, NULL, 0, NULL, 1);
+  xTaskCreatePinnedToCore(midi_task, "midi task", 10000, NULL, 0, NULL, 0);
 }
 
 void loop() {
   for(int sample = 0; sample < BUFFER_SIZE; sample ++) {
     sample_buffer_f[sample] = 0;
-    if(sample % 31 == 0) main_filter.calculate();
-    for(int voice = 0; voice < VOICE_CNT; voice ++) {
-      if(sample % 31 == 0) {
-        computeADSR(&(voices[voice].env));
-      }
-      sample_buffer_f[sample] += do_voice(&voices[voice]);
+    if(sample % 31 == 0) {
+      eng.compute();
     }
+    sample_buffer_f[sample] += eng.process();
+    // Serial.println(sample_buffer_f[sample]);
   }
 
-
-
   for(int sample = 0; sample < BUFFER_SIZE; sample ++) {
-    float post_main_filter = main_filter.process(sample_buffer_f[sample]);
-    uint32_t curr_sample_i = uint16_t((post_main_filter/VOICE_CNT)+1.0)*32767.5;
+    uint32_t curr_sample_i = uint16_t(((sample_buffer_f[sample]/(float)VOICE_CNT)+1.0)*32767.5);
+    // Serial.println(curr_sample_i);
     sample_buffer_i[sample] = curr_sample_i;
   }
   i2s_write(i2s_num, &sample_buffer_i, sizeof(sample_buffer_i), &bytesWritten, portMAX_DELAY);

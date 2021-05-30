@@ -4,20 +4,25 @@
 #include "lookuptables.hpp"
 #include "oscillators.hpp"
 
-class Basic_note : public Oscillator {
+class Note {
   public :
 
+    char channel = 0;
     float velocity = 0;
     float pitch = 0;
 
-    inline void set_note(char note, float vel) {
-      velocity = vel;
-      pitch = noteToFreq[note];
-      set_frequency(pitch);
+    inline bool check(char ch, char nt) {
+      return (channel == ch && pitch == noteToFreq[nt]);
     }
 
-    inline float get_sample() {
-        return Oscillator::get_sample() * velocity;
+    inline void set_note(char ch, char note, float vel) {
+      channel = ch;
+      velocity = vel;
+      pitch = noteToFreq[note];
+    }
+
+    inline float process(float sample) {
+        return sample * velocity;
     }
 };
 

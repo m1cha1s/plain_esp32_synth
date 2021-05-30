@@ -34,16 +34,7 @@ class ADSR {
                         envelope = 0;
                     }
                     break;
-
             }
         }
 };
-
-class Basic_ADSR : public Basic_note, public ADSR{
-    public:
-        inline float get_sample() {
-            return Basic_note::get_sample() * envelope;
-        }
-};
-
 #endif
