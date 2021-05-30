@@ -1,12 +1,17 @@
 #ifndef VOICES_H
 #define VOICES_H
 
-#include "notes.hpp"
-#include "wavetables.hpp"
 #include "envelopes.hpp"
-#include "interpolators.hpp"
+
+class Basic_voice : public Basic_ADSR {
+  public:
+    
+};
 
 typedef struct {
+
+  
+
   char channel = 0;
   float *waveform = wavetables[0];
   Note note;

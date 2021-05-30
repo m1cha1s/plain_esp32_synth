@@ -7,7 +7,7 @@
 #include "filters.hpp"
 
 Voice voices[VOICE_CNT];
-Biquad main_filter;
+Biquad_filter main_filter;
 
 size_t bytesWritten;
 uint32_t sample_buffer_i[BUFFER_SIZE] = {0};

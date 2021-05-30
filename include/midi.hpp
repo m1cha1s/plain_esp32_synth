@@ -20,7 +20,7 @@ void handleCtrlChange(byte ch, byte ctrl, byte val) {
   Serial.println(ctrl);
   switch (ctrl) {
     case 7 : // resonance
-      main_filter.Q = dmap(val, 0, 127, 0.1, 10);
+      main_filter.set_resonance(dmap(val, 0, 127, 0.1, 10));
       break;
     case 72 : // releas
       for(int voice = 0; voice < VOICE_CNT; voice ++) {
@@ -33,7 +33,7 @@ void handleCtrlChange(byte ch, byte ctrl, byte val) {
       }
       break;
     case 74 : // cutoff
-      main_filter.Fc = dmap(val, 0, 127, 10, 10000);
+      main_filter.set_cutoff(dmap(val, 0, 127, 10, 10000));
       break;
     case 75 : // decay
       for(int voice = 0; voice < VOICE_CNT; voice ++) {

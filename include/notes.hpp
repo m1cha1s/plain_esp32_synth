@@ -1,13 +1,24 @@
 #ifndef NOTES_H
 #define NOTES_H
 
-typedef struct {
-  float pitch = 0;
-  float velocity = 0;
-  char channel = 0;
+#include "lookuptables.hpp"
+#include "oscillators.hpp"
 
-  float step = 0;
-  float phase = 0;
-}Note;
+class Basic_note : public Oscillator {
+  public :
+
+    float velocity = 0;
+    float pitch = 0;
+
+    inline void set_note(char note, float vel) {
+      velocity = vel;
+      pitch = noteToFreq[note];
+      set_frequency(pitch);
+    }
+
+    inline float get_sample() {
+        return Oscillator::get_sample() * velocity;
+    }
+};
 
 #endif

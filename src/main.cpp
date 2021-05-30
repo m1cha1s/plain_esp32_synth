@@ -28,7 +28,7 @@ void setup() {
   init_I2S();
 
   randomSeed(34547379);
-  calculate_biquad(&main_filter);
+  main_filter.calculate();
 
   xTaskCreatePinnedToCore(core_0_task, "Core 0 task", 10000, NULL, 0, NULL, 0);
   xTaskCreatePinnedToCore(midi_task, "midi task", 10000, NULL, 0, NULL, 1);
@@ -37,7 +37,7 @@ void setup() {
 void loop() {
   for(int sample = 0; sample < BUFFER_SIZE; sample ++) {
     sample_buffer_f[sample] = 0;
-    if(sample % 31 == 0) calculate_biquad(&main_filter);
+    if(sample % 31 == 0) main_filter.calculate();
     for(int voice = 0; voice < VOICE_CNT; voice ++) {
       if(sample % 31 == 0) {
         computeADSR(&(voices[voice].env));
@@ -49,7 +49,8 @@ void loop() {
 
 
   for(int sample = 0; sample < BUFFER_SIZE; sample ++) {
-    uint32_t curr_sample_i = uint16_t(((do_biquad(sample_buffer_f[sample], &main_filter)/VOICE_CNT)+1.0)*32767.5);
+    float post_main_filter = main_filter.process(sample_buffer_f[sample]);
+    uint32_t curr_sample_i = uint16_t((post_main_filter/VOICE_CNT)+1.0)*32767.5;
     sample_buffer_i[sample] = curr_sample_i;
   }
   i2s_write(i2s_num, &sample_buffer_i, sizeof(sample_buffer_i), &bytesWritten, portMAX_DELAY);
