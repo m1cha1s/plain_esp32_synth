@@ -7,12 +7,16 @@
 #include "filters.hpp"
 #include "mixers.hpp"
 #include "functions.hpp"
+#include "delays.hpp"
+#include "reverb.hpp"
 
 class Basic_engine {
     public:
         Basic_voice voices[VOICE_CNT];
-        State_variable_filter filter;
+        Biquad_filter filter;
         Mixer mixer;
+        Basic_delay delay0;
+        Reverb reverb0;
 
         Basic_engine() {
             filter.compute();
@@ -78,8 +82,9 @@ class Basic_engine {
                 mixer.mix(voices[vc].process());
             }
             float sample = mixer.process();
-            // Serial.println(sample);
-            //sample = filter.process(sample);
+            sample = filter.process(sample);
+            sample = delay0.process(sample);
+            sample = reverb0.process(sample);
             return sample;
         }
 

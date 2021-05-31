@@ -1,8 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VOICE_CNT 1
+#define VOICE_CNT 16
 #define SAMPLE_RATE 44100.0
+float SAMPLE_RATE_MS = 0.022675736961451;
 #define BUFFER_SIZE 64
 #define WAVETABLE_LEN 512.0
 

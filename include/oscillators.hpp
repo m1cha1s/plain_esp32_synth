@@ -12,18 +12,19 @@ class Wavetable_oscillator {
 
     float step = 0;
     float phase = 0;
-    float *waveform = wavetables[0];
+    float *waveform = wavetables[2];
 
     // Wavetable_oscillator() {
     //   step = 0;
     //   phase = 0;
     // }
 
-    Wavetable_oscillator(float *wf = wavetables[0]) {
+    Wavetable_oscillator(float *wf = wavetables[2]) {
       waveform = wf;
     }
 
     inline void set_note(Note nt) {
+      set_waveform(wavetables[nt.channel-1]);
       set_frequency(nt.pitch);
     }
 

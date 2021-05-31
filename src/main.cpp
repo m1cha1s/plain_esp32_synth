@@ -45,7 +45,8 @@ void loop() {
   }
 
   for(int sample = 0; sample < BUFFER_SIZE; sample ++) {
-    uint32_t curr_sample_i = uint16_t(((sample_buffer_f[sample]/(float)VOICE_CNT)+1.0)*32767.5);
+    uint32_t curr_sample_i = uint16_t(((sample_buffer_f[sample])+1.0)*32000);
+    curr_sample_i = (curr_sample_i<<16) | curr_sample_i;
     // Serial.println(curr_sample_i);
     sample_buffer_i[sample] = curr_sample_i;
   }
@@ -60,13 +61,51 @@ void core_0_task(void * param) {
   }
 }
 
+int prev[8];
+#define TOUCH_THRESHOLD 20
+
 void setup_0() {
-    pinMode(2, OUTPUT);
+    pinMode(25, OUTPUT);
+    pinMode(26, OUTPUT);
+    pinMode(27, OUTPUT);
 }
 
 void loop_0() {
-    digitalWrite(2, 1);
-    delay(1000);
-    digitalWrite(2, 0);
-    delay(1000);
+  for(int j = 0; j < 8; j++) {
+    int curr = 0;
+    for (int i = 0; i < 5; i++) curr += touchRead(15);
+    curr = curr/5;
+    if(prev[j] > TOUCH_THRESHOLD) {
+      if(curr < TOUCH_THRESHOLD) {
+        eng.noteOn(3, 66+j, 127);
+      }
+    } else {
+      if(curr > TOUCH_THRESHOLD) {
+        eng.noteOff(3, 66+j, 127);
+      }
+    }
+    prev[j] = curr;
+  }
+
+  for (int i = 0; i < 8; i++) {
+    Serial.print(prev[i]);
+    Serial.print(" ");
+  }
+  Serial.println();
+  delay(10);
+  
+  int readings[8];
+
+  for (int i = 0; i < 8; i++) {
+    digitalWrite(25, i & 0x01);
+    digitalWrite(26, i & 0x02);
+    digitalWrite(27, i & 0x04);
+    readings[i] = map(analogRead(4), 0, 4095, 0, 127);
+  }
+  for (int i = 0; i < 8; i++) {
+    Serial.print(readings[i]);
+    Serial.print(" ");
+  }
+  Serial.println();
+  delay(100);
 }

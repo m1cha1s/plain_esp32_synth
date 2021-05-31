@@ -29,7 +29,7 @@ class Biquad_filter {
         float b1, b2;
         
         char type = 0;
-        float Fc = 1, Fs = SAMPLE_RATE, Q = 0.7, peak_gain = 1;
+        float Fc = 10000, Fs = SAMPLE_RATE, Q = 0.7, peak_gain = 1;
 
 
     public:
@@ -50,7 +50,7 @@ class Biquad_filter {
             peak_gain = pg;
         }
 
-        inline void calculate() {
+        inline void compute() {
             float norm = 0;
             float V = pow(10, abs(peak_gain) / 20);
             float K = tan(PI * Fc / Fs);
@@ -85,7 +85,7 @@ class State_variable_filter {
     public:
 
         char type = 0;
-        float Fc = 10000, Fs = SAMPLE_RATE, Q = 0.7;
+        float Fc = 10000, Fs = SAMPLE_RATE, Q = 0.1;
 
         float f, q;
         float low = 0, high = 0, band = 0, notch = 0;
@@ -119,6 +119,50 @@ class State_variable_filter {
                 case 3: return notch;
                 default: return low;
             }
+        }
+};
+
+class Comb_filter {
+    public:
+        float *delay_buff;
+        float gain;
+        int delay_ptr = 0;
+        int delay_lim;
+
+        Comb_filter(int delay, float gn) {
+            delay_buff = new float(delay);
+            gain = gn;
+            delay_lim = delay-1;
+        }
+
+        inline float process(float x) {
+            float sample = delay_buff[delay_ptr];
+            delay_buff[delay_ptr] = x + (sample * gain);
+            delay_ptr++;
+            if(delay_ptr < delay_lim) delay_ptr = 0;
+            return sample;
+        }
+};
+
+class All_pass_filter {
+    public:
+        float *delay_buff;
+        float gain;
+        int delay_ptr = 0;
+        int delay_lim;
+
+        All_pass_filter(int delay, float gn) {
+            delay_buff = new float(delay);
+            gain = gn;
+            delay_lim = delay-1;
+        }
+
+        inline float process(float x) {
+            float sample = delay_buff[delay_ptr] + (-gain * x);
+            delay_buff[delay_ptr] = x + (sample * gain);
+            delay_ptr++;
+            if(delay_ptr < delay_lim) delay_ptr = 0;
+            return sample;
         }
 };
 
