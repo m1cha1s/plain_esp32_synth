@@ -6,19 +6,42 @@
 #include "mixers.hpp"
 
 class Reverb {
+    private:
+
+        int cb0_t = SAMPLE_RATE_MS * 36.04;
+        int cb1_t = SAMPLE_RATE_MS * 31.12;
+        int cb2_t = SAMPLE_RATE_MS * 40.44;
+        int cb3_t = SAMPLE_RATE_MS * 44.92;
+
+        int ap0_t = SAMPLE_RATE_MS * 5;
+        int ap1_t = SAMPLE_RATE_MS * 1.68;
+        int ap2_t = SAMPLE_RATE_MS * 0.48;
+
+
     public:
 
         float wet = 0.5;
 
         Mixer mx;
 
-        Comb_filter cb0(int(SAMPLE_RATE_MS * 36.04), 0.805), 
-                    cb1(SAMPLE_RATE_MS * 31.12, 0.827), 
-                    cb2(SAMPLE_RATE_MS * 40.44, 0.783), 
-                    cb3(SAMPLE_RATE_MS * 44.92, 0.764);
-        All_pass_filter ap0(SAMPLE_RATE_MS * 5, 0.7), 
-                        ap1(SAMPLE_RATE_MS * 1.68, 0.7), 
-                        ap2(SAMPLE_RATE_MS * 0.48, 0.7);
+        Comb_filter cb0, 
+                    cb1, 
+                    cb2, 
+                    cb3;
+        All_pass_filter ap0, 
+                        ap1, 
+                        ap2;
+
+        Reverb() {
+            cb0.begin(cb0_t, 0.805);
+            cb1.begin(cb0_t, 0.827);
+            cb2.begin(cb0_t, 0.783);
+            cb3.begin(cb0_t, 0.764);
+
+            ap0.begin(ap0_t, 0.7);
+            ap1.begin(ap1_t, 0.7);
+            ap2.begin(ap2_t, 0.7);
+        }
 
         inline float process(float x) {
             mx.mix(cb0.process(x));

@@ -94,7 +94,6 @@ class Basic_engine {
                 voices[vc].compute();
             }
         }
-
 };
 
 #endif

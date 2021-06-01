@@ -129,7 +129,7 @@ class Comb_filter {
         int delay_ptr = 0;
         int delay_lim;
 
-        Comb_filter(int delay, float gn) {
+        void begin(int delay, float gn) {
             delay_buff = new float(delay);
             gain = gn;
             delay_lim = delay-1;
@@ -151,7 +151,7 @@ class All_pass_filter {
         int delay_ptr = 0;
         int delay_lim;
 
-        All_pass_filter(int delay, float gn) {
+        void begin(int delay, float gn) {
             delay_buff = new float(delay);
             gain = gn;
             delay_lim = delay-1;
