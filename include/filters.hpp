@@ -2,6 +2,7 @@
 #define FILTERS_H
 
 #include <math.h>
+#include <Arduino.h>
 #include "config.hpp"
 
 // typedef struct {
@@ -22,7 +23,7 @@
 
 
 class Biquad_filter {
-    private:
+    public:
         float px, ppx;
         float py, ppy;
         float a0, a1, a2;
@@ -30,9 +31,7 @@ class Biquad_filter {
         
         char type = 0;
         float Fc = 10000, Fs = SAMPLE_RATE, Q = 0.7, peak_gain = 1;
-
-
-    public:
+        float mod = 0;
 
         Biquad_filter(char tp = 0) {
             type = tp;
@@ -40,6 +39,7 @@ class Biquad_filter {
 
         inline void set_cutoff(float cutoff) {
             Fc = cutoff;
+            if (Fc < 30) Fc = 30;
         }
 
         inline void set_resonance(float resonance) {
@@ -53,7 +53,9 @@ class Biquad_filter {
         inline void compute() {
             float norm = 0;
             float V = pow(10, abs(peak_gain) / 20);
-            float K = tan(PI * Fc / Fs);
+            float modulated = (Fc+mod);
+            if (modulated < 30) Fc = 30;
+            float K = tan(PI * modulated / Fs);
             switch(type) {
                 case 0 :
                     norm = 1 / (1 + K / Q + K * K);
@@ -77,7 +79,9 @@ class Biquad_filter {
             return y;
         }
 
-
+        inline void modulate(float m) {
+            mod = m;
+        }
 
 };
 
@@ -124,15 +128,15 @@ class State_variable_filter {
 
 class Comb_filter {
     public:
-        float *delay_buff;
+        std::vector<float> delay_buff;
         float gain;
         int delay_ptr = 0;
         int delay_lim;
 
-        void begin(int delay, float gn) {
-            delay_buff = new float(delay);
+        void begin(int size, float gn) {
+            delay_buff.resize(size);
             gain = gn;
-            delay_lim = delay-1;
+            delay_lim = size-1;
         }
 
         inline float process(float x) {
@@ -146,15 +150,15 @@ class Comb_filter {
 
 class All_pass_filter {
     public:
-        float *delay_buff;
+        std::vector<float> delay_buff;
         float gain;
         int delay_ptr = 0;
         int delay_lim;
 
-        void begin(int delay, float gn) {
-            delay_buff = new float(delay);
+        void begin(int size, float gn) {
+            delay_buff.resize(size);
             gain = gn;
-            delay_lim = delay-1;
+            delay_lim = size-1;
         }
 
         inline float process(float x) {

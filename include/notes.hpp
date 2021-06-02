@@ -8,6 +8,7 @@ class Note {
   public :
 
     char channel = 0;
+    char note = 0;
     float velocity = 0;
     float pitch = 0;
 
@@ -15,10 +16,11 @@ class Note {
       return (channel == ch && pitch == noteToFreq[nt]);
     }
 
-    inline void set_note(char ch, char note, float vel) {
+    inline void set_note(char ch, char nt, float vel) {
       channel = ch;
       velocity = vel;
-      pitch = noteToFreq[note];
+      pitch = noteToFreq[nt];
+      note = nt;
     }
 
     inline float process(float sample) {

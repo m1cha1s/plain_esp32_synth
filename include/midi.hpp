@@ -27,12 +27,17 @@ void handleNoteOn(byte ch, byte nt, byte vl) {
   eng.noteOn(ch, nt, vl);
 }
 
+void handlePitchBend(byte ch, int val) {
+  eng.pitchBendChange(ch, val);
+}
+
 
 void init_midi() {
     MIDI.begin(MIDI_CHANNEL_OMNI);
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleControlChange(handleCtrlChange);
+    MIDI.setHandlePitchBend(handlePitchBend);
 }
 
 void midi_task(void * param) {

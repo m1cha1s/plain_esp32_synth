@@ -1,7 +1,7 @@
 #ifndef WAVETABLES_H
 #define WAVETABLES_H
 
-float saw[] = {
+const static float saw[] = {
     -1.0000,
     -0.9961,
     -0.9922,
@@ -520,7 +520,7 @@ float saw[] = {
     -0.9883,
 };
 
-float sine[] = {
+const static float sine[] = {
     0.0000,
     0.0123,
     0.0245,
@@ -1039,7 +1039,7 @@ float sine[] = {
     0.0368,
 };
 
-float square[] = {
+const static float square[] = {
     -1.0000,
     -1.0000,
     -1.0000,
@@ -1558,7 +1558,7 @@ float square[] = {
     -1.0000,
 };
 
-float triangle[] = {
+const static float triangle[] = {
     -1.0000,
     -0.9922,
     -0.9844,
@@ -2077,7 +2077,7 @@ float triangle[] = {
     -0.9766,
 };
 
-float *wavetables[] = {
+const static float *wavetables[] = {
     sine,
     triangle,
     saw,

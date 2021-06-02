@@ -8,14 +8,18 @@ class Basic_delay {
     public :
         Mixer mx;
 
-        float factor = 0.7;
-        float delay_buffer[(int)(SAMPLE_RATE/2)];
+        float wet = 0.7;
+        std::vector<float> delay_buffer;
         float delay_time = 1;
         int buffer_ptr = 0;
         int end_point = ((SAMPLE_RATE/2)-1)*delay_time;
 
-        inline void set_factor(float wetness) {
-            factor = wetness;
+        Basic_delay() {
+            delay_buffer.resize(SAMPLE_RATE/2);
+        }
+
+        inline void set_wet(float wetness) {
+            wet = wetness;
         }
 
         inline void set_delay_time(float time_s) {
@@ -25,7 +29,7 @@ class Basic_delay {
 
         inline float process(float x) {
             mx.mix(x);
-            mx.mix(delay_buffer[buffer_ptr]*factor);
+            mx.mix(delay_buffer[buffer_ptr]*wet);
             float sample = mx.process();
             delay_buffer[buffer_ptr] = sample;
             buffer_ptr++;

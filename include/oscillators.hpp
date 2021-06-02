@@ -12,14 +12,14 @@ class Wavetable_oscillator {
 
     float step = 0;
     float phase = 0;
-    float *waveform = wavetables[2];
+    const float *waveform = wavetables[0];
 
     // Wavetable_oscillator() {
     //   step = 0;
     //   phase = 0;
     // }
 
-    Wavetable_oscillator(float *wf = wavetables[2]) {
+    Wavetable_oscillator(const float *wf = wavetables[0]) {
       waveform = wf;
     }
 
@@ -28,7 +28,7 @@ class Wavetable_oscillator {
       set_frequency(nt.pitch);
     }
 
-    inline void set_waveform(float *wf) {
+    inline void set_waveform(const float *wf) {
       waveform = wf;
     }
 

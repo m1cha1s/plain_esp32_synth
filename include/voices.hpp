@@ -12,6 +12,12 @@ class Basic_voice{
     Wavetable_oscillator osc0;
     ADSR env0;
 
+    inline void modulate(float md) {
+      float modulated_frequency = note.pitch + md;
+      if(modulated_frequency < 0) modulated_frequency = 0;
+      osc0.set_frequency(modulated_frequency);
+    }
+
     inline bool noteOn(byte ch, byte nt, byte vl) {
       if(env0.state == 4 || (env0.state == 3 && note.pitch == noteToFreq[nt] && note.channel == ch)) {
         note.set_note(ch, nt, vl/127.0f);

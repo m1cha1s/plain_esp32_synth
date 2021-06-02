@@ -3,6 +3,7 @@
 #include <driver/i2s.h>
 #include <math.h> 
 #include <WiFi.h>
+#include <LedControl.h>
 
 #include "globals.hpp"
 #include "interpolators.hpp"
@@ -18,6 +19,8 @@
 #include "midi.hpp"
 #include "engines.hpp"
 
+
+
 void core_0_task(void * param);
 void setup_0();
 void loop_0();
@@ -25,6 +28,8 @@ void loop_0();
 void setup() {
   Serial.begin(9600);
   
+
+
   init_midi();
   init_I2S();
 
@@ -32,6 +37,7 @@ void setup() {
 
   xTaskCreatePinnedToCore(core_0_task, "Core 0 task", 10000, NULL, 0, NULL, 0);
   xTaskCreatePinnedToCore(midi_task, "midi task", 10000, NULL, 0, NULL, 0);
+  Serial.println(esp_get_free_heap_size());
 }
 
 void loop() {
@@ -45,7 +51,7 @@ void loop() {
   }
 
   for(int sample = 0; sample < BUFFER_SIZE; sample ++) {
-    uint32_t curr_sample_i = uint16_t(((sample_buffer_f[sample])+1.0)*32000);
+    uint32_t curr_sample_i = uint16_t(((sample_buffer_f[sample]/16.0f)+1.0)*32000*0.7);
     curr_sample_i = (curr_sample_i<<16) | curr_sample_i;
     // Serial.println(curr_sample_i);
     sample_buffer_i[sample] = curr_sample_i;
@@ -87,14 +93,14 @@ void loop_0() {
     prev[j] = curr;
   }
 
-  for (int i = 0; i < 8; i++) {
-    Serial.print(prev[i]);
-    Serial.print(" ");
-  }
-  Serial.println();
+  // for (int i = 0; i < 8; i++) {
+  //   Serial.print(prev[i]);
+  //   Serial.print(" ");
+  // }
+  // Serial.println();
   delay(10);
   
-  int readings[8];
+  byte readings[8];
 
   for (int i = 0; i < 8; i++) {
     digitalWrite(25, i & 0x01);
@@ -103,9 +109,7 @@ void loop_0() {
     readings[i] = map(analogRead(4), 0, 4095, 0, 127);
   }
   for (int i = 0; i < 8; i++) {
-    Serial.print(readings[i]);
-    Serial.print(" ");
+    
   }
-  Serial.println();
   delay(100);
 }
